@@ -1,24 +1,35 @@
 package vault
 
-// kvVersion stores the configured KV engine version for the client.
-// It is set during client construction and used in path resolution.
+import (
+	"fmt"
+	"strconv"
+)
 
-// WithKVVersion sets the KV secrets engine version on the client.
-// Defaults to KVv2 if not called.
-func (c *Client) WithKVVersion(v KVVersion) *Client {
-	c.kvVersion = v
-	return c
+// KVVersion represents the KV secrets engine version.
+type KVVersion int
+
+const (
+	KVVersion1 KVVersion = 1
+	KVVersion2 KVVersion = 2
+)
+
+// String returns the string representation of the KV version.
+func (v KVVersion) String() string {
+	return strconv.Itoa(int(v))
 }
 
-// KVVersionFromString parses a version string ("1" or "2") into a KVVersion.
-// Returns KVv2 and false if the string is unrecognised.
-func KVVersionFromString(s string) (KVVersion, bool) {
+// KVVersionFromString parses a string into a KVVersion.
+// An empty string defaults to KVVersion2.
+func KVVersionFromString(s string) (KVVersion, error) {
+	if s == "" {
+		return KVVersion2, nil
+	}
 	switch s {
 	case "1":
-		return KVv1, true
+		return KVVersion1, nil
 	case "2":
-		return KVv2, true
+		return KVVersion2, nil
 	default:
-		return KVv2, false
+		return 0, fmt.Errorf("vault: unsupported KV version %q: must be \"1\" or \"2\"", s)
 	}
 }

@@ -39,3 +39,14 @@ func (l *TagLogger) Log(path string, tags map[string]string) {
 func (l *TagLogger) Entries() []TagEntry {
 	return l.entries
 }
+
+// EntriesForPath returns all recorded tag entries matching the given path.
+func (l *TagLogger) EntriesForPath(path string) []TagEntry {
+	var result []TagEntry
+	for _, e := range l.entries {
+		if e.Path == path {
+			result = append(result, e)
+		}
+	}
+	return result
+}

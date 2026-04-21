@@ -47,3 +47,17 @@ func (c *Client) GetTags(path string) (map[string]string, error) {
 	}
 	return body.Data.CustomMetadata, nil
 }
+
+// GetTag retrieves a single tag value by key for a secret at the given path.
+// Returns an error if the tag does not exist.
+func (c *Client) GetTag(path, key string) (string, error) {
+	tags, err := c.GetTags(path)
+	if err != nil {
+		return "", err
+	}
+	val, ok := tags[key]
+	if !ok {
+		return "", fmt.Errorf("tag %q not found on secret: %s", key, path)
+	}
+	return val, nil
+}
